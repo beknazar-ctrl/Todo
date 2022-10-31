@@ -27,8 +27,16 @@ class TodoCard extends StatelessWidget {
               unselectedWidgetColor: Color(0xff5e616a),
             ),
           ),
-          Container(
-            height: 55,
+          Expanded(
+            child: Container(
+              height: 55,
+              child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                color: Color(0xff2a2e3d),
+              ),
+            ),
           ),
         ],
       ),

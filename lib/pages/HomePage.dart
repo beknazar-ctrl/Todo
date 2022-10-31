@@ -51,6 +51,18 @@ class _HomePageState extends State<HomePage> {
           preferredSize: Size.fromHeight(30),
         ),
       ),
+      body: SingleChildScrollView(
+        child: Container(
+          height: MediaQuery.of(context).size.height,
+          width: MediaQuery.of(context).size.width,
+          padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
+          child: Column(
+            children: [
+              TodoCard(),
+            ],
+          ),
+        ),
+      ),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.black87,
         items: [
@@ -86,33 +98,6 @@ class _HomePageState extends State<HomePage> {
               ),
               label: "Settings"),
         ],
-      ),
-      body: SingleChildScrollView(
-          child: Container(
-            decoration: const BoxDecoration(
-                gradient: LinearGradient(
-              begin: Alignment.topRight,
-              end: Alignment.bottomLeft,
-              stops: [
-                0.1,
-                0.4,
-                0.6,
-                0.9,
-              ],
-              colors: [
-                Colors.yellow,
-                Colors.red,
-                Colors.indigo,
-                Colors.teal,
-              ],
-            )
-    ),
-            child: Column(
-              children: [
-                TodoCard(),
-              ],
-            ),
-          ),
       ),
     );
   }
