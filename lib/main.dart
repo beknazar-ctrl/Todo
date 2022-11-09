@@ -26,6 +26,8 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    // authClass.signOut();
+    checkLogin();
   }
 
   void checkLogin() async {
@@ -39,9 +41,9 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomePage(),
+      home: currentPage,
     );
   }
 }

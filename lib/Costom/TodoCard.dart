@@ -1,9 +1,22 @@
 import 'package:flutter/material.dart';
 
 class TodoCard extends StatelessWidget {
-  const TodoCard({Key? key,required this.title}) : super(key: key);
+  const TodoCard(
+      {Key? key,
+      required this.title,
+      required this.check,
+      required this.iconBGColor,
+      required this.iconColor,
+      required this.time,
+      required this.iconData})
+      : super(key: key);
 
   final String title;
+  final String time;
+  final bool check;
+  final Color iconBGColor;
+  final Color iconColor;
+  final IconData iconData;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +33,7 @@ class TodoCard extends StatelessWidget {
                 ),
                 activeColor: Color(0xff6cf89),
                 checkColor: Color(0xff0e3e26),
-                value: false,
+                value: check,
                 onChanged: (bool? value) {},
               ),
             ),
@@ -46,28 +59,30 @@ class TodoCard extends StatelessWidget {
                       height: 33,
                       width: 36,
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: iconBGColor,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Icon(Icons.audiotrack),
+                      child: Icon(iconData,color: iconColor,),
+                    ),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: TextStyle(
+                          fontSize: 18,
+                          letterSpacing: 1,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                     SizedBox(
                       width: 20,
                     ),
                     Text(
-                      "Lets Wake Up",
-                      style: TextStyle(
-                        fontSize: 18,
-                        letterSpacing: 1,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                    SizedBox(
-                      width: 50,
-                    ),
-                    Text(
-                      "11 PM",
+                      time,
                       style: TextStyle(
                         fontSize: 15,
                         color: Colors.white,

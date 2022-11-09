@@ -2,18 +2,31 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class AddTodoPage extends StatefulWidget {
-  const AddTodoPage({Key? key}) : super(key: key);
+class ViewData extends StatefulWidget {
+  const ViewData({Key? key, required this.document}) : super(key: key);
+  final Map<String, dynamic> document;
 
   @override
-  State<AddTodoPage> createState() => _AddTodoPageState();
+  State<ViewData> createState() => _ViewDataState();
 }
 
-class _AddTodoPageState extends State<AddTodoPage> {
-  TextEditingController _titleController = TextEditingController();
-  TextEditingController _descriptionController = TextEditingController();
+class _ViewDataState extends State<ViewData> {
+  TextEditingController? _titleController;
+  TextEditingController? _descriptionController;
   String type = "";
   String category = "";
+  bool edit = false;
+
+  @override
+  void initState() {
+    super.initState();
+    String title = widget.document["title"] ?? "Error";
+    _titleController = TextEditingController(text: title);
+    _descriptionController =
+        TextEditingController(text: widget.document["description"]);
+    type = widget.document["task"];
+    category = widget.document["Category"];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,15 +48,31 @@ class _AddTodoPageState extends State<AddTodoPage> {
               const SizedBox(
                 height: 30,
               ),
-              IconButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  icon: const Icon(
-                    CupertinoIcons.arrow_left,
-                    color: Colors.white,
-                    size: 28,
-                  )),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(
+                        CupertinoIcons.arrow_left,
+                        color: Colors.white,
+                        size: 28,
+                      )), IconButton(
+                      onPressed: () {
+                        setState(() {
+                          edit = !edit;
+                        });
+                      },
+                      icon: Icon(
+                        Icons.edit,
+                        color: edit ? Colors.red : Colors.white,
+                        size: 28,
+                      )),
+                ],
+              ),
+
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
@@ -51,7 +80,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "Create",
+                      "View",
                       style: TextStyle(
                           fontSize: 33,
                           color: Colors.white,
@@ -62,7 +91,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
                       height: 8,
                     ),
                     Text(
-                      "New Todo",
+                      "Your Todo",
                       style: TextStyle(
                           fontSize: 33,
                           color: Colors.white,
@@ -152,10 +181,10 @@ class _AddTodoPageState extends State<AddTodoPage> {
     return InkWell(
       onTap: () {
         FirebaseFirestore.instance.collection("Todo").add({
-          "title": _titleController.text,
+          "title": _titleController!.text,
           "task": type,
           "Category": category,
-          "description": _descriptionController.text
+          "description": _descriptionController!.text
         });
         Navigator.pop(context);
       },
@@ -192,6 +221,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
       ),
       child: TextFormField(
         controller: _descriptionController,
+        enabled: edit,
         style: TextStyle(
           color: Colors.grey,
           fontSize: 17,
@@ -222,6 +252,7 @@ class _AddTodoPageState extends State<AddTodoPage> {
       ),
       child: TextFormField(
         controller: _titleController,
+        enabled: edit,
         style: TextStyle(
           color: Colors.grey,
           fontSize: 17,

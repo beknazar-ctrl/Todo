@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:to_do/Costom/TodoCard.dart';
 import 'package:to_do/Service/Auth_Service.dart';
+import 'package:to_do/pages/AddTodo.dart';
 import 'package:to_do/pages/SignUpPage.dart';
+import 'package:to_do/pages/view_data.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -15,6 +18,9 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    AuthClass authClass = AuthClass();
+    final Stream<QuerySnapshot> _streem =
+        FirebaseFirestore.instance.collection("Todo").snapshots();
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -51,18 +57,61 @@ class _HomePageState extends State<HomePage> {
           preferredSize: Size.fromHeight(30),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          padding: EdgeInsets.symmetric(horizontal: 10,vertical: 10),
-          child: Column(
-            children: [
-              TodoCard(),
-            ],
-          ),
-        ),
-      ),
+      body: StreamBuilder(
+          stream: _streem,
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+            return ListView.builder(
+              itemCount: snapshot.data?.docs.length,
+              itemBuilder: (context, index) {
+                IconData iconData;
+                Color iconColor;
+                Map<String, dynamic> document =
+                    snapshot.data?.docs[index].data() as Map<String, dynamic>;
+                switch (document["Category"]) {
+                  case "Work":
+                    iconData = Icons.run_circle_outlined;
+                    iconColor = Colors.red;
+                    break;
+                  case "WorkOut":
+                    iconData = Icons.alarm;
+                    iconColor = Colors.teal;
+                    break;
+                  case "Food":
+                    iconData = Icons.local_grocery_store;
+                    iconColor = Colors.blue;
+                    break;
+                  case "Desing":
+                    iconData = Icons.audiotrack;
+                    iconColor = Colors.red;
+                    break;
+                  default:
+                    iconData = Icons.run_circle_outlined;
+                    iconColor = Colors.green;
+                }
+                return InkWell(
+                  onTap: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (builder) => ViewData(document: document,)));
+                  },
+                  child: TodoCard(
+                    check: true,
+                    iconBGColor: Colors.white,
+                    iconColor: iconColor,
+                    iconData: iconData,
+                    time: "10 AM",
+                    title: document["title"] == null
+                        ? "Hey there"
+                        : document["title"],
+                  ),
+                );
+              },
+            );
+          }),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Colors.black87,
         items: [
@@ -74,19 +123,27 @@ class _HomePageState extends State<HomePage> {
               ),
               label: "Home"),
           BottomNavigationBarItem(
-              icon: Container(
-                height: 52,
-                width: 52,
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    gradient: LinearGradient(colors: [
-                      Colors.indigoAccent,
-                      Colors.purple,
-                    ])),
-                child: Icon(
-                  Icons.add,
-                  size: 32,
-                  color: Colors.white,
+              icon: InkWell(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (builder) => const AddTodoPage()));
+                },
+                child: Container(
+                  height: 52,
+                  width: 52,
+                  decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      gradient: LinearGradient(colors: [
+                        Colors.indigoAccent,
+                        Colors.purple,
+                      ])),
+                  child: Icon(
+                    Icons.add,
+                    size: 32,
+                    color: Colors.white,
+                  ),
                 ),
               ),
               label: "Add"),
