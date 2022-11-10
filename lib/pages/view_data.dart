@@ -3,8 +3,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class ViewData extends StatefulWidget {
-  const ViewData({Key? key, required this.document}) : super(key: key);
+  const ViewData({
+    Key? key,
+    required this.document,
+    required this.id,
+  }) : super(key: key);
   final Map<String, dynamic> document;
+  final String id;
 
   @override
   State<ViewData> createState() => _ViewDataState();
@@ -59,20 +64,37 @@ class _ViewDataState extends State<ViewData> {
                         CupertinoIcons.arrow_left,
                         color: Colors.white,
                         size: 28,
-                      )), IconButton(
-                      onPressed: () {
-                        setState(() {
-                          edit = !edit;
-                        });
-                      },
-                      icon: Icon(
-                        Icons.edit,
-                        color: edit ? Colors.red : Colors.white,
-                        size: 28,
                       )),
+                  Row(
+                    children: [
+                      IconButton(
+                          onPressed: () {
+                            setState(() {
+                              edit = !edit;
+                            });
+                          },
+                          icon: Icon(
+                            Icons.edit,
+                            color: edit ? Colors.red : Colors.white,
+                            size: 28,
+                          )),
+                      IconButton(
+                          onPressed: () {
+                            FirebaseFirestore.instance
+                                .collection("Todo")
+                                .doc(widget.id)
+                                .delete()
+                                .then((value) => {Navigator.pop(context)});
+                          },
+                          icon: Icon(
+                            Icons.delete,
+                            color: Colors.red,
+                            size: 28,
+                          )),
+                    ],
+                  ),
                 ],
               ),
-
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 25, vertical: 5),
@@ -80,10 +102,10 @@ class _ViewDataState extends State<ViewData> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      "View",
+                      edit ? "Editing" : "View",
                       style: TextStyle(
-                          fontSize: 33,
-                          color: Colors.white,
+                          fontSize: 18,
+                          color: edit ? Colors.red : Colors.white,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 4),
                     ),
@@ -161,7 +183,7 @@ class _ViewDataState extends State<ViewData> {
                         SizedBox(
                           height: 50,
                         ),
-                        button("Add Todo"),
+                        edit ? button("Update Todo") : Container(),
                         SizedBox(
                           height: 30,
                         )
@@ -180,7 +202,7 @@ class _ViewDataState extends State<ViewData> {
   Widget button(String text) {
     return InkWell(
       onTap: () {
-        FirebaseFirestore.instance.collection("Todo").add({
+        FirebaseFirestore.instance.collection("Todo").doc(widget.id).update({
           "title": _titleController!.text,
           "task": type,
           "Category": category,
@@ -272,13 +294,18 @@ class _ViewDataState extends State<ViewData> {
     );
   }
 
-  Widget taskSelect(String label, int color) {
+  Widget taskSelect(
+    String label,
+    int color,
+  ) {
     return InkWell(
-      onTap: () {
-        setState(() {
-          type = label;
-        });
-      },
+      onTap: edit
+          ? () {
+              setState(() {
+                type = label;
+              });
+            }
+          : null,
       child: Chip(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
@@ -296,11 +323,13 @@ class _ViewDataState extends State<ViewData> {
 
   Widget categorySelect(String label, int color) {
     return InkWell(
-      onTap: () {
-        setState(() {
-          category = label;
-        });
-      },
+      onTap: edit
+          ? () {
+              setState(() {
+                category = label;
+              });
+            }
+          : null,
       child: Chip(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(10),
