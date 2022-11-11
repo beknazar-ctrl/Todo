@@ -58,10 +58,9 @@ class _HomePageState extends State<HomePage> {
                   ),
                   IconButton(
                       onPressed: () {
-                         var instance =
-                            FirebaseFirestore.instance.collection("Todo");
-                        // for (int i = 0; i < selected.length; i++);
-
+                        // var instance =
+                        //     FirebaseFirestore.instance.collection("Todo");
+                        // for (int i = 0; i < selected.length; i++)
                       },
                       icon: Icon(
                         Icons.delete,
@@ -176,10 +175,8 @@ class _HomePageState extends State<HomePage> {
           BottomNavigationBarItem(
               icon: InkWell(
                 onTap: () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (builder) => Profile()));
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (builder) => Profile()));
                 },
                 child: Icon(
                   Icons.settings,
